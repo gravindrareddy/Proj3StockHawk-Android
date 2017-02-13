@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
@@ -131,7 +134,15 @@ public class StockTaskService extends GcmTaskService {
                     if (stockJSONObjs.size() > 0) {
                         mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY, stockJSONObjs);
                     } else {
-                        com.redgun.stockhawk.ui.Utils.showToast(mContext, "Incorrect stock code!!");
+                        Handler mainHandler = new Handler(Looper.getMainLooper());
+
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                com.redgun.stockhawk.ui.Utils.showToast(mContext, "Incorrect stock code!!");
+                            }
+                        });
+
                     }
                 } catch (RemoteException | OperationApplicationException e) {
                     Log.e(LOG_TAG, "Error applying batch insert", e);
